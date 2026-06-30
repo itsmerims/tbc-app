@@ -6,25 +6,24 @@ interface Props {
   open: boolean
   onToggle: () => void
   children: JSX.Element
-  width?: number
+  fraction?: string
   actions?: JSX.Element
 }
 
 const CollapsiblePanel: Component<Props> = (props) => {
   let containerRef: HTMLDivElement | undefined
   let mounted = false
-  const pw = () => props.width ?? 320
 
   createEffect(() => {
     if (!containerRef) return
-    const target = props.open ? pw() : 0
+    const target = props.open ? 1 : 0
     if (!mounted) {
       mounted = true
-      gsap.set(containerRef, { width: target })
+      gsap.set(containerRef, { scaleX: target, transformOrigin: 'left' })
       return
     }
     gsap.to(containerRef, {
-      width: target,
+      scaleX: target,
       duration: 0.35,
       ease: 'power3.inOut',
       overwrite: 'auto',
@@ -32,9 +31,9 @@ const CollapsiblePanel: Component<Props> = (props) => {
   })
 
   return (
-    <div class="flex items-stretch">
-      <div ref={containerRef} class="overflow-hidden shrink-0">
-        <div class="h-full" style={{ width: `${pw()}px` }}>
+    <div class="flex items-stretch" style={{ flex: props.fraction || '1' }}>
+      <div ref={containerRef} class="overflow-hidden" style={{ flex: '1 1 0%' }}>
+        <div class="h-full w-full flex flex-col">
           <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200/80 dark:border-white/10 shrink-0">
             <h2 class="font-bold text-sm tracking-tight uppercase text-[#1a1f26] dark:text-slate-400">
               {props.title}
@@ -60,7 +59,7 @@ const CollapsiblePanel: Component<Props> = (props) => {
               </button>
             </div>
           </div>
-          <div class="overflow-y-auto h-[calc(100%-49px)] scrollbar-auto-hide">
+          <div class="overflow-y-auto flex-1 scrollbar-auto-hide">
             {props.children}
           </div>
         </div>

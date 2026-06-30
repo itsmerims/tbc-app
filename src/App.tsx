@@ -303,12 +303,12 @@ export default function App() {
     switch (tab) {
       case 'home':
         return (
-          <div class="flex-1 flex flex-row gap-0 p-4 pl-0 overflow-hidden h-full">
+          <div class="flex flex-row p-4 pl-0 overflow-hidden h-full">
             <CollapsiblePanel
               title="Players"
               open={ui.playersPanelOpen}
               onToggle={() => ui.togglePlayersPanel()}
-              width={288}
+              fraction="0 0 25%"
             >
               <PlayerList
                 players={waitingPlayers()}
@@ -319,12 +319,12 @@ export default function App() {
               />
             </CollapsiblePanel>
 
-            <div class="flex-1 flex flex-row gap-0 overflow-hidden min-w-0">
+            <div class="flex flex-row overflow-hidden min-w-0" style="flex: 0 0 75%">
               <CollapsiblePanel
                 title="Queue"
                 open={ui.queuePanelOpen}
                 onToggle={() => ui.toggleQueuePanel()}
-                width={340}
+                fraction="0 0 50%"
                 actions={
                   <button
                     onClick={() => courts.addQueue()}
@@ -358,7 +358,7 @@ export default function App() {
                 </div>
               </CollapsiblePanel>
 
-              <div class="flex-1 flex flex-col overflow-hidden min-w-0 pl-4 pr-4">
+              <div class="flex flex-col overflow-hidden min-w-0 pl-4 pr-4" style="flex: 0 0 50%">
                 <div class="flex items-center justify-between mb-3 shrink-0 pb-2 border-b border-gray-200/80 dark:border-white/10">
                   <h2 class="text-sm font-bold tracking-tight uppercase text-[#1a1f26] dark:text-slate-400">Courts</h2>
                   <div class="flex items-center gap-2">
