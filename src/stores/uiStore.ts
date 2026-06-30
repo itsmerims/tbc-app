@@ -14,7 +14,6 @@ interface UIState {
   leaderboardSort: { key: LeaderboardSortKey; asc: boolean }
   minGamesFilter: number
   excludePlayers: string
-  excludeStats: string
   playerModalOpen: boolean
   editingPlayerId: string | null
   statsModalOpen: boolean
@@ -32,7 +31,6 @@ interface UIState {
   setLeaderboardSort: (key: LeaderboardSortKey) => void
   setMinGamesFilter: (v: number) => void
   setExcludePlayers: (v: string) => void
-  setExcludeStats: (v: string) => void
   openPlayerModal: (id?: string | null) => void
   closePlayerModal: () => void
   openStatsModal: (player: string) => void
@@ -53,7 +51,6 @@ export const useUIStore = createSolidStore<UIState>()(
       leaderboardSort: { key: 'rate', asc: false },
       minGamesFilter: 0,
       excludePlayers: '',
-      excludeStats: '',
       playerModalOpen: false,
       editingPlayerId: null,
       statsModalOpen: false,
@@ -78,7 +75,6 @@ export const useUIStore = createSolidStore<UIState>()(
         })),
       setMinGamesFilter: (v) => set({ minGamesFilter: v }),
       setExcludePlayers: (v) => set({ excludePlayers: v }),
-      setExcludeStats: (v) => set({ excludeStats: v }),
       openPlayerModal: (id = null) =>
         set({ playerModalOpen: true, editingPlayerId: id }),
       closePlayerModal: () =>
@@ -102,7 +98,6 @@ export const useUIStore = createSolidStore<UIState>()(
       partialize: (state: UIState) => ({
         theme: state.theme,
         excludePlayers: state.excludePlayers,
-        excludeStats: state.excludeStats,
       } as UIState),
     }
   )

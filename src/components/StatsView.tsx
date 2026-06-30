@@ -43,30 +43,21 @@ const StatsView: Component<Props> = (props) => {
   const [resultsOpen, setResultsOpen] = createSignal(true)
   const courts = useCourtStore()
 
-  const excludedStats = () =>
-    ui.excludeStats
-      .split(',')
-      .map((s) => s.trim().toLowerCase())
-      .filter(Boolean)
+  const [excludePlayersDraft, setExcludePlayersDraft] = createSignal(ui.excludePlayers)
+  const [minGamesDraft, setMinGamesDraft] = createSignal(String(ui.minGamesFilter))
 
-  const activePlayerNames = createMemo(() =>
-    Object.keys(props.playerStats).filter(
-      (name) => !excludedStats().includes(name.trim().toLowerCase())
-    )
-  )
+  const applyFilters = () => {
+    ui.setExcludePlayers(excludePlayersDraft())
+    ui.setMinGamesFilter(parseInt(minGamesDraft()) || 0)
+  }
 
-  const validMatches = createMemo(() =>
-    props.matchHistory.filter((m) => {
-      const participants = [...m.team1, ...m.team2].map((p) =>
-        p.trim().toLowerCase()
-      )
-      return participants.some((p) => !excludedStats().includes(p))
-    })
-  )
+  const handleFilterKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') applyFilters()
+  }
 
   const summary = createMemo(() => {
-    const names = activePlayerNames()
-    const matches = validMatches()
+    const names = Object.keys(props.playerStats)
+    const matches = props.matchHistory
     const totalPlayers = names.length
     const totalMatches = matches.length
     let totalGames = 0
@@ -374,26 +365,28 @@ const StatsView: Component<Props> = (props) => {
           <div class="px-4 pb-4 border-t border-white/10 dark:border-white/[0.06]">
             <div class="flex flex-wrap items-center gap-3 pt-4">
               <input
-                value={ui.excludePlayers}
-                onInput={(e) => ui.setExcludePlayers(e.currentTarget.value)}
+                value={excludePlayersDraft()}
+                onInput={(e) => setExcludePlayersDraft(e.currentTarget.value)}
+                onKeyDown={handleFilterKeyDown}
                 placeholder="Exclude players..."
                 class="flex-1 min-w-0 px-2.5 py-1.5 text-sm rounded-lg bg-white/40 dark:bg-white/[0.04] border border-white/20 dark:border-white/[0.08] outline-none focus:border-blue-400/50 transition-all placeholder:text-slate-400/60"
-              />
-              <input
-                value={ui.excludeStats}
-                onInput={(e) => ui.setExcludeStats(e.currentTarget.value)}
-                placeholder="Exclude from stats..."
-                class="flex-1 min-w-0 px-2.5 py-1.5 text-sm rounded-lg bg-white/40 dark:bg-white/[0.04] border border-white/20 dark:border-white/[0.08] outline-none focus:border-blue-400/50 focus:bg-white/60 dark:focus:bg-white/[0.08] transition-all placeholder:text-slate-400/60"
               />
               <div class="flex items-center gap-2 shrink-0">
                 <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Min Games</span>
                 <input
                   type="number"
-                  value={ui.minGamesFilter}
-                  onInput={(e) => ui.setMinGamesFilter(parseInt(e.currentTarget.value) || 0)}
+                  value={minGamesDraft()}
+                  onInput={(e) => setMinGamesDraft(e.currentTarget.value)}
+                  onKeyDown={handleFilterKeyDown}
                   class="w-16 px-2 py-1.5 text-sm rounded-lg bg-white/40 dark:bg-white/[0.04] border border-white/20 dark:border-white/[0.08] outline-none focus:border-blue-400/50 transition-all"
                 />
               </div>
+              <button
+                onClick={applyFilters}
+                class="px-3 py-1.5 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all active:scale-90"
+              >
+                Filter
+              </button>
             </div>
             <div class="overflow-x-auto pt-4">
               <table class="w-full text-sm">
