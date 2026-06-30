@@ -1,11 +1,13 @@
-import { createSignal, createEffect, onCleanup, type Component } from 'solid-js'
+import { createSignal, createEffect, createMemo, onCleanup, type Component } from 'solid-js'
 import gsap from 'gsap'
 import { formatTime } from '../lib/formats'
+import { pairPlayedBefore } from '../lib/algorithms'
 import PlayerSlot from './PlayerSlot'
-import type { Court } from '../types'
+import type { Court, MatchRecord } from '../types'
 
 interface Props {
   court: Court
+  matchHistory: MatchRecord[]
   onSlotClick: (team: 'team1' | 'team2', slot: number) => void
   onPlayerDrop: (playerName: string, team: 'team1' | 'team2', slot: number) => void
   onRemovePlayer: (team: 'team1' | 'team2', slot: number) => void
@@ -70,6 +72,19 @@ const CourtCard: Component<Props> = (props) => {
 
   const playerCount = () =>
     [...props.court.team1, ...props.court.team2].filter(Boolean).length
+
+  const teamRepeatPairs = createMemo(() => {
+    const check = (team: (string | null)[]): { repeat: boolean; label: string } => {
+      const p = team.filter((p): p is string => !!p)
+      if (p.length < 2) return { repeat: false, label: '' }
+      const repeat = pairPlayedBefore(p[0], p[1], props.matchHistory)
+      return { repeat, label: repeat ? `${p[0]} & ${p[1]}` : '' }
+    }
+    return {
+      team1: check(props.court.team1),
+      team2: check(props.court.team2),
+    }
+  })
 
   return (
     <div
@@ -146,8 +161,18 @@ const CourtCard: Component<Props> = (props) => {
                     : 'border-red-500/10 dark:border-red-400/[0.06]')
                 }
               >
-                <div class="text-[10px] font-semibold uppercase tracking-widest mb-1.5 text-gray-600 dark:text-slate-400 court-card-player-name">
-                  {team === 'team1' ? 'Team 1' : 'Team 2'}
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <span class="text-[10px] font-semibold uppercase tracking-widest text-gray-600 dark:text-slate-400 court-card-player-name">
+                    {team === 'team1' ? 'Team 1' : 'Team 2'}
+                  </span>
+                  {teamRepeatPairs()[team].repeat && (
+                    <span
+                      class="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-500 dark:text-amber-400 font-bold uppercase tracking-wider border border-amber-400/20"
+                      title={`Repeated pair: ${teamRepeatPairs()[team].label}`}
+                    >
+                      🔄
+                    </span>
+                  )}
                 </div>
                 <div class="grid grid-cols-2 court-card-gap">
                   {([0, 1] as const).map((slot) => (
@@ -194,8 +219,18 @@ const CourtCard: Component<Props> = (props) => {
                   : '')
               }
             >
-              <div class="text-[10px] font-semibold uppercase tracking-widest text-gray-600 dark:text-slate-400">
-                Team A
+              <div class="flex items-center justify-center gap-1">
+                <span class="text-[10px] font-semibold uppercase tracking-widest text-gray-600 dark:text-slate-400">
+                  Team A
+                </span>
+                {teamRepeatPairs().team1.repeat && (
+                  <span
+                    class="text-[9px] px-1 rounded-full bg-amber-400/15 text-amber-500 dark:text-amber-400 font-bold"
+                    title={`Repeated pair: ${teamRepeatPairs().team1.label}`}
+                  >
+                    🔄
+                  </span>
+                )}
               </div>
               <input
                 type="number"
@@ -243,8 +278,18 @@ const CourtCard: Component<Props> = (props) => {
                   : '')
               }
             >
-              <div class="text-[10px] font-semibold uppercase tracking-widest text-gray-600 dark:text-slate-400">
-                Team B
+              <div class="flex items-center justify-center gap-1">
+                <span class="text-[10px] font-semibold uppercase tracking-widest text-gray-600 dark:text-slate-400">
+                  Team B
+                </span>
+                {teamRepeatPairs().team2.repeat && (
+                  <span
+                    class="text-[9px] px-1 rounded-full bg-amber-400/15 text-amber-500 dark:text-amber-400 font-bold"
+                    title={`Repeated pair: ${teamRepeatPairs().team2.label}`}
+                  >
+                    🔄
+                  </span>
+                )}
               </div>
               <input
                 type="number"

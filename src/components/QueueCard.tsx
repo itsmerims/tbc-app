@@ -1,9 +1,11 @@
-import type { Component } from 'solid-js'
+import { createMemo, type Component } from 'solid-js'
 import PlayerSlot from './PlayerSlot'
-import type { QueueGroup } from '../types'
+import { pairPlayedBefore } from '../lib/algorithms'
+import type { QueueGroup, MatchRecord } from '../types'
 
 interface Props {
   queue: QueueGroup
+  matchHistory: MatchRecord[]
   onSlotClick: (team: 'team1' | 'team2', slot: number) => void
   onPlayerDrop: (playerName: string, team: 'team1' | 'team2', slot: number) => void
   onRemovePlayer: (team: 'team1' | 'team2', slot: number) => void
@@ -19,6 +21,19 @@ const QueueCard: Component<Props> = (props) => {
 
   const playerCount = () =>
     [...props.queue.team1, ...props.queue.team2].filter(Boolean).length
+
+  const teamRepeatPairs = createMemo(() => {
+    const check = (team: (string | null)[]): { repeat: boolean; label: string } => {
+      const p = team.filter((p): p is string => !!p)
+      if (p.length < 2) return { repeat: false, label: '' }
+      const repeat = pairPlayedBefore(p[0], p[1], props.matchHistory)
+      return { repeat, label: repeat ? `${p[0]} & ${p[1]}` : '' }
+    }
+    return {
+      team1: check(props.queue.team1),
+      team2: check(props.queue.team2),
+    }
+  })
 
   return (
     <div
@@ -45,8 +60,18 @@ const QueueCard: Component<Props> = (props) => {
                 : 'bg-amber-500/5 border border-amber-500/10')
             }
           >
-            <div class="text-[10px] font-semibold uppercase tracking-widest mb-1.5 text-gray-600 dark:text-slate-400">
-              {team === 'team1' ? 'Pair 1' : 'Pair 2'}
+            <div class="flex items-center gap-1.5 mb-1.5">
+              <span class="text-[10px] font-semibold uppercase tracking-widest text-gray-600 dark:text-slate-400">
+                {team === 'team1' ? 'Pair 1' : 'Pair 2'}
+              </span>
+              {teamRepeatPairs()[team].repeat && (
+                <span
+                  class="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-500 dark:text-amber-400 font-bold uppercase tracking-wider border border-amber-400/20"
+                  title={`Repeated pair: ${teamRepeatPairs()[team].label}`}
+                >
+                  🔄
+                </span>
+              )}
             </div>
             <div class="grid grid-cols-2 gap-2">
               {([0, 1] as const).map((slot) => (

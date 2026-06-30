@@ -296,6 +296,7 @@ export default function App() {
                     {(q) => (
                       <QueueCard
                         queue={q}
+                        matchHistory={courts.matchHistory}
                         onSlotClick={(team, slot) =>
                           handleSlotClick('queue', q.id, team, slot)
                         }
@@ -345,6 +346,7 @@ export default function App() {
                       {(c) => (
                         <CourtCard
                           court={c}
+                          matchHistory={courts.matchHistory}
                           onSlotClick={(team, slot) =>
                             handleSlotClick('court', c.id, team, slot)
                           }
