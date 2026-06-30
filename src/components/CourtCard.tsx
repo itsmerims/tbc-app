@@ -114,8 +114,8 @@ const CourtCard: Component<Props> = (props) => {
             class={
               `text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider ` +
               (props.court.locked
-                ? 'bg-green-100/80 text-green-800 border border-green-200/60'
-                : 'bg-gray-100/80 text-gray-500 border border-gray-200/60')
+                ? 'bg-green-100/80 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200/60 dark:border-green-700/40'
+                : 'bg-gray-100/80 dark:bg-gray-800/40 text-gray-500 dark:text-gray-400 border border-gray-200/60 dark:border-gray-700/40')
             }
           >
             {props.court.locked ? 'Live' : 'Idle'}
