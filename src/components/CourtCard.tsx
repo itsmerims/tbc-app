@@ -3,7 +3,7 @@ import gsap from 'gsap'
 import { formatTime } from '../lib/formats'
 import { pairPlayedBefore } from '../lib/algorithms'
 import PlayerSlot from './PlayerSlot'
-import type { Court, MatchRecord } from '../types'
+import { LEVEL_NAMES, type Court, type MatchRecord } from '../types'
 
 interface Props {
   court: Court
@@ -243,20 +243,32 @@ const CourtCard: Component<Props> = (props) => {
                 class="w-full text-center court-card-score font-black bg-transparent border-none outline-none text-slate-900 dark:text-white tabular-nums placeholder:text-slate-400/50 dark:placeholder:text-slate-500/50"
               />
               <div class="space-y-1 w-full mt-1">
-                {[0, 1].map((slot) => (
-                  <div
-                    class={
-                      `court-card-player-name font-medium text-center truncate rounded-lg px-2 py-1 ` +
-                      (props.court.team1[slot]
-                        ? 'bg-blue-100/50 dark:bg-blue-900/20'
-                        : '')
-                    }
-                  >
-                    {props.court.team1[slot] || (
-                      <span class="text-slate-400 italic court-card-player-name">empty</span>
-                    )}
-                  </div>
-                ))}
+                {[0, 1].map((slot) => {
+                  const name = props.court.team1[slot]
+                  const lv = name ? Number(props.getPlayerLevel(name)) : 1
+                  return (
+                    <div
+                      class={
+                        `court-card-player-name font-medium text-center rounded-lg px-2 py-1 ` +
+                        (name ? 'bg-blue-100/50 dark:bg-blue-900/20' : '')
+                      }
+                    >
+                      {name ? (
+                        <div class="flex items-center justify-center gap-1.5 truncate">
+                          <span
+                            class="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-[0.15em] shrink-0"
+                            style={`color:var(--level-text-${lv});background:color-mix(in srgb,var(--color-level-${lv}) 18%,var(--badge-mix-base));border:1px solid color-mix(in srgb,var(--color-level-${lv}) 30%,transparent)`}
+                          >
+                            {LEVEL_NAMES[lv - 1]}
+                          </span>
+                          <span class="truncate">{name}</span>
+                        </div>
+                      ) : (
+                        <span class="text-slate-400 italic court-card-player-name">empty</span>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             </div>
 
@@ -302,25 +314,38 @@ const CourtCard: Component<Props> = (props) => {
                 class="w-full text-center court-card-score font-black bg-transparent border-none outline-none text-slate-900 dark:text-white tabular-nums placeholder:text-slate-400/50 dark:placeholder:text-slate-500/50"
               />
               <div class="space-y-1 w-full mt-1">
-                {[0, 1].map((slot) => (
-                  <div
-                    class={
-                      `court-card-player-name font-medium text-center truncate rounded-lg px-2 py-1 ` +
-                      (props.court.team2[slot]
-                        ? 'bg-red-100/50 dark:bg-red-900/20'
-                        : '')
-                    }
-                  >
-                    {props.court.team2[slot] || (
-                      <span class="text-slate-400 italic court-card-player-name">empty</span>
-                    )}
-                  </div>
-                ))}
+                {[0, 1].map((slot) => {
+                  const name = props.court.team2[slot]
+                  const lv = name ? Number(props.getPlayerLevel(name)) : 1
+                  return (
+                    <div
+                      class={
+                        `court-card-player-name font-medium text-center rounded-lg px-2 py-1 ` +
+                        (name ? 'bg-red-100/50 dark:bg-red-900/20' : '')
+                      }
+                    >
+                      {name ? (
+                        <div class="flex items-center justify-center gap-1.5 truncate">
+                          <span
+                            class="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-[0.15em] shrink-0"
+                            style={`color:var(--level-text-${lv});background:color-mix(in srgb,var(--color-level-${lv}) 18%,var(--badge-mix-base));border:1px solid color-mix(in srgb,var(--color-level-${lv}) 30%,transparent)`}
+                          >
+                            {LEVEL_NAMES[lv - 1]}
+                          </span>
+                          <span class="truncate">{name}</span>
+                        </div>
+                      ) : (
+                        <span class="text-slate-400 italic court-card-player-name">empty</span>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             </div>
+
           </div>
 
-          {/* Action buttons */}
+            {/* Action buttons */}
           <div class="flex gap-2 shrink-0">
             <button
               onClick={() => props.onFinishMatch(score1(), score2())}
