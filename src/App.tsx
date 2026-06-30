@@ -306,8 +306,6 @@ export default function App() {
           <div class="flex flex-row p-4 pl-0 overflow-hidden h-full">
             <CollapsiblePanel
               title="Players"
-              open={ui.playersPanelOpen}
-              onToggle={() => ui.togglePlayersPanel()}
               fraction="0 0 25%"
             >
               <PlayerList
@@ -322,8 +320,6 @@ export default function App() {
             <div class="flex flex-row overflow-hidden min-w-0" style="flex: 0 0 75%">
               <CollapsiblePanel
                 title="Queue"
-                open={ui.queuePanelOpen}
-                onToggle={() => ui.toggleQueuePanel()}
                 fraction="0 0 50%"
                 actions={
                   <button

@@ -23,8 +23,6 @@ interface UIState {
   statsTableModalPlayer: string | null
   editMatchModalOpen: boolean
   editingMatchIndex: number | null
-  playersPanelOpen: boolean
-  queuePanelOpen: boolean
 
   toggleTheme: () => void
   setTheme: (t: 'light' | 'dark') => void
@@ -43,8 +41,6 @@ interface UIState {
   closeStatsTableModal: () => void
   openEditMatchModal: (index: number) => void
   closeEditMatchModal: () => void
-  togglePlayersPanel: () => void
-  toggleQueuePanel: () => void
 }
 
 export const useUIStore = createSolidStore<UIState>()(
@@ -66,8 +62,6 @@ export const useUIStore = createSolidStore<UIState>()(
       statsTableModalPlayer: null,
       editMatchModalOpen: false,
       editingMatchIndex: null,
-      playersPanelOpen: true,
-      queuePanelOpen: true,
 
       toggleTheme: () =>
         set((s) => ({ theme: s.theme === 'light' ? 'dark' : 'light' })),
@@ -101,8 +95,6 @@ export const useUIStore = createSolidStore<UIState>()(
         set({ editMatchModalOpen: true, editingMatchIndex: index }),
       closeEditMatchModal: () =>
         set({ editMatchModalOpen: false, editingMatchIndex: null }),
-      togglePlayersPanel: () => set((s) => ({ playersPanelOpen: !s.playersPanelOpen })),
-      toggleQueuePanel: () => set((s) => ({ queuePanelOpen: !s.queuePanelOpen })),
     }),
     {
       name: 'tbc-ui',
@@ -111,8 +103,6 @@ export const useUIStore = createSolidStore<UIState>()(
         theme: state.theme,
         excludePlayers: state.excludePlayers,
         excludeStats: state.excludeStats,
-        playersPanelOpen: state.playersPanelOpen,
-        queuePanelOpen: state.queuePanelOpen,
       } as UIState),
     }
   )
