@@ -80,6 +80,7 @@ export default function App() {
     if (!target) return
 
     const slotPlayerName = target[team][slot]
+    removePlayerFromAllSlots(player.name)
     if (slotPlayerName) {
       const slotPlayer = players.players.find(
         (p) => p.name === slotPlayerName
@@ -112,6 +113,28 @@ export default function App() {
     )
   }
 
+  const removePlayerFromAllSlots = (name: string) => {
+    const nameLower = name.toLowerCase()
+    courts.courts.forEach((c) => {
+      ;(['team1', 'team2'] as const).forEach((t) => {
+        c[t].forEach((p, i) => {
+          if (p && p.toLowerCase() === nameLower) {
+            courts.assignPlayerToSlot({ type: 'court', id: c.id, team: t, slot: i }, null)
+          }
+        })
+      })
+    })
+    courts.queues.forEach((q) => {
+      ;(['team1', 'team2'] as const).forEach((t) => {
+        q[t].forEach((p, i) => {
+          if (p && p.toLowerCase() === nameLower) {
+            courts.assignPlayerToSlot({ type: 'queue', id: q.id, team: t, slot: i }, null)
+          }
+        })
+      })
+    })
+  }
+
   const handlePlayerDrop = (
     playerName: string,
     targetType: 'court' | 'queue',
@@ -133,6 +156,7 @@ export default function App() {
     } else {
       setSelectedPlayerId(null)
     }
+    removePlayerFromAllSlots(playerName)
     courts.assignPlayerToSlot(
       { type: targetType, id: targetId, team, slot },
       playerName
