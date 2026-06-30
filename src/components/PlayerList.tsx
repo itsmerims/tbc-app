@@ -1,4 +1,4 @@
-import { createMemo, For, type Component } from 'solid-js'
+import { createMemo, createSignal, onCleanup, For, type Component } from 'solid-js'
 import { useUIStore } from '../stores/uiStore'
 import { formatTime } from '../lib/formats'
 import type { Player, PlayerStats } from '../types'
@@ -14,6 +14,9 @@ interface Props {
 
 const PlayerList: Component<Props> = (props) => {
   const ui = useUIStore()
+  const [tick, setTick] = createSignal(0)
+  const timerId = setInterval(() => setTick((t) => t + 1), 1000)
+  onCleanup(() => clearInterval(timerId))
 
   const sortedPlayers = createMemo(() => {
     const active = props.players.filter((p) => p.active)
@@ -41,12 +44,6 @@ const PlayerList: Component<Props> = (props) => {
 
     return [...active, ...inactive]
   })
-
-  const getWaitSeconds = (p: Player) => {
-    if (!p.active) return 0
-    const start = p.queueStart || p.timeIn
-    return Math.floor((Date.now() - start) / 1000)
-  }
 
   const getWaitClass = (seconds: number) => {
     if (seconds >= 1500) return 'wait-indicator-20'
@@ -102,7 +99,7 @@ const PlayerList: Component<Props> = (props) => {
       <div class="flex-1 overflow-y-auto p-3 space-y-2 scrollbar-auto-hide">
         <For each={sortedPlayers()}>
           {(p) => {
-            const waitSec = getWaitSeconds(p)
+            const waitSec = p.active ? Math.floor((Date.now() + tick() * 0 - (p.queueStart || p.timeIn)) / 1000) : 0
             const avgWait = getAvgWait(p.name)
             const isSelected = props.selectedPlayerId === p.id
 
