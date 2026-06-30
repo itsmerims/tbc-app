@@ -87,6 +87,36 @@ const CourtCard: Component<Props> = (props) => {
     }
   })
 
+  let lastRepeatKey: string | null = null
+  createEffect(() => {
+    const t1 = teamRepeatPairs().team1
+    const t2 = teamRepeatPairs().team2
+
+    if (t1.repeat) {
+      const p = props.court.team1.filter((p): p is string => !!p)
+      if (p.length === 2) {
+        const key = `team1-${p[0]}-${p[1]}`
+        if (key !== lastRepeatKey) {
+          lastRepeatKey = key
+          props.onShowRepeatWarning('team1', [p[0], p[1]])
+        }
+        return
+      }
+    }
+    if (t2.repeat) {
+      const p = props.court.team2.filter((p): p is string => !!p)
+      if (p.length === 2) {
+        const key = `team2-${p[0]}-${p[1]}`
+        if (key !== lastRepeatKey) {
+          lastRepeatKey = key
+          props.onShowRepeatWarning('team2', [p[0], p[1]])
+        }
+        return
+      }
+    }
+    lastRepeatKey = null
+  })
+
   return (
     <div
       ref={cardRef}
@@ -167,15 +197,9 @@ const CourtCard: Component<Props> = (props) => {
                     {team === 'team1' ? 'Team 1' : 'Team 2'}
                   </span>
                   {teamRepeatPairs()[team].repeat && (
-                    <button
-                      onClick={() => {
-                        const p = props.court[team].filter((p): p is string => !!p)
-                        if (p.length === 2) props.onShowRepeatWarning(team, [p[0], p[1]])
-                      }}
-                      class="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-500 dark:text-amber-400 font-bold uppercase tracking-wider border border-amber-400/20 hover:bg-amber-400/25 transition-all active:scale-90"
-                    >
+                    <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-500 dark:text-amber-400 font-bold uppercase tracking-wider border border-amber-400/20">
                       🔄
-                    </button>
+                    </span>
                   )}
                 </div>
                 <div class="grid grid-cols-2 court-card-gap">
