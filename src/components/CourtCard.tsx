@@ -16,6 +16,7 @@ interface Props {
   onCancelMatch: () => void
   onRemove: () => void
   onLabelChange: (label: string) => void
+  onShowRepeatWarning: (team: 'team1' | 'team2', players: [string, string]) => void
   getPlayerLevel: (name: string) => number
 }
 
@@ -166,12 +167,15 @@ const CourtCard: Component<Props> = (props) => {
                     {team === 'team1' ? 'Team 1' : 'Team 2'}
                   </span>
                   {teamRepeatPairs()[team].repeat && (
-                    <span
-                      class="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-500 dark:text-amber-400 font-bold uppercase tracking-wider border border-amber-400/20"
-                      title={`Repeated pair: ${teamRepeatPairs()[team].label}`}
+                    <button
+                      onClick={() => {
+                        const p = props.court[team].filter((p): p is string => !!p)
+                        if (p.length === 2) props.onShowRepeatWarning(team, [p[0], p[1]])
+                      }}
+                      class="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-500 dark:text-amber-400 font-bold uppercase tracking-wider border border-amber-400/20 hover:bg-amber-400/25 transition-all active:scale-90"
                     >
                       🔄
-                    </span>
+                    </button>
                   )}
                 </div>
                 <div class="grid grid-cols-2 court-card-gap">

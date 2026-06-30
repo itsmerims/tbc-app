@@ -16,6 +16,7 @@ import PaymentsView from './components/PaymentsView'
 import PlayerStatsModal from './components/PlayerStatsModal'
 import PlayerStatsTableModal from './components/PlayerStatsTableModal'
 import MatchEditModal from './components/MatchEditModal'
+import RepeatPairModal from './components/RepeatPairModal'
 
 export default function App() {
   const players = usePlayerStore()
@@ -23,6 +24,12 @@ export default function App() {
   const ui = useUIStore()
 
   const [selectedPlayerId, setSelectedPlayerId] = createSignal<string | null>(null)
+  const [repeatPairModal, setRepeatPairModal] = createSignal<{
+    type: 'court' | 'queue'
+    id: string
+    team: 'team1' | 'team2'
+    players: [string, string]
+  } | null>(null)
 
   createEffect(() => {
     const theme = ui.theme
@@ -107,6 +114,26 @@ export default function App() {
       )
       setSelectedPlayerId(null)
     }
+  }
+
+  const handleSwapPlayer = (
+    type: 'court' | 'queue',
+    id: string,
+    team: 'team1' | 'team2',
+    currentPlayer: string,
+    replacement: string
+  ) => {
+    const target = type === 'court'
+      ? courts.courts.find((c) => c.id === id)
+      : courts.queues.find((q) => q.id === id)
+    if (!target) return
+
+    const slot = target[team].findIndex((p) => p === currentPlayer)
+    if (slot === -1) return
+
+    removePlayerFromAllSlots(replacement)
+    courts.assignPlayerToSlot({ type, id, team, slot }, replacement)
+    setRepeatPairModal(null)
   }
 
   const handleRemovePlayer = (
@@ -333,22 +360,25 @@ export default function App() {
                   <div class="queue-grid p-4">
                   <For each={courts.queues}>
                     {(q) => (
-                      <QueueCard
-                        queue={q}
-                        matchHistory={courts.matchHistory}
-                        onSlotClick={(team, slot) =>
-                          handleSlotClick('queue', q.id, team, slot)
-                        }
-                        onPlayerDrop={(name, team, slot) =>
-                          handlePlayerDrop(name, 'queue', q.id, team, slot)
-                        }
-                        onRemovePlayer={(team, slot) =>
-                          handleRemovePlayer('queue', q.id, team, slot)
-                        }
-                        onSend={() => handleSendQueue(q.id)}
-                        onRemove={() => courts.removeQueue(q.id)}
-                        getPlayerLevel={getPlayerLevel}
-                      />
+                       <QueueCard
+                         queue={q}
+                         matchHistory={courts.matchHistory}
+                         onSlotClick={(team, slot) =>
+                           handleSlotClick('queue', q.id, team, slot)
+                         }
+                         onPlayerDrop={(name, team, slot) =>
+                           handlePlayerDrop(name, 'queue', q.id, team, slot)
+                         }
+                         onRemovePlayer={(team, slot) =>
+                           handleRemovePlayer('queue', q.id, team, slot)
+                         }
+                         onSend={() => handleSendQueue(q.id)}
+                         onRemove={() => courts.removeQueue(q.id)}
+                         onShowRepeatWarning={(team, players) =>
+                           setRepeatPairModal({ type: 'queue', id: q.id, team, players })
+                         }
+                         getPlayerLevel={getPlayerLevel}
+                       />
                     )}
                   </For>
                   </div>
@@ -356,7 +386,7 @@ export default function App() {
               </CollapsiblePanel>
 
               <div class="flex flex-col overflow-hidden min-w-0 pl-4 pr-4" style="flex: 0 0 50%">
-                <div class="flex items-center justify-between mb-3 shrink-0 pb-2 border-b border-gray-200/80 dark:border-white/10">
+                <div class="flex items-center justify-between px-4 py-3 shrink-0 border-b border-gray-200/80 dark:border-white/10">
                   <h2 class="text-sm font-bold tracking-tight uppercase text-[#1a1f26] dark:text-slate-400">Courts</h2>
                   <div class="flex items-center gap-2">
                   <button
@@ -404,6 +434,9 @@ export default function App() {
                           onRemove={() => courts.removeCourt(c.id)}
                           onLabelChange={(label) =>
                             courts.updateCourtLabel(c.id, label)
+                          }
+                          onShowRepeatWarning={(team, players) =>
+                            setRepeatPairModal({ type: 'court', id: c.id, team, players })
                           }
                           getPlayerLevel={getPlayerLevel}
                         />
@@ -474,6 +507,20 @@ export default function App() {
           index={ui.editingMatchIndex!}
           match={courts.matchHistory[ui.editingMatchIndex!]}
           onClose={() => ui.closeEditMatchModal()}
+        />
+      </Show>
+
+      <Show when={repeatPairModal()}>
+        <RepeatPairModal
+          players={repeatPairModal()!.players}
+          team={repeatPairModal()!.team}
+          waitingPlayers={waitingPlayers()}
+          matchHistory={courts.matchHistory}
+          getPlayerLevel={getPlayerLevel}
+          onSelectSwap={(current, replacement) =>
+            handleSwapPlayer(repeatPairModal()!.type, repeatPairModal()!.id, repeatPairModal()!.team, current, replacement)
+          }
+          onClose={() => setRepeatPairModal(null)}
         />
       </Show>
     </div>
