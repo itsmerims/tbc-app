@@ -66,8 +66,7 @@ export function autoMatchmaker(
 
           // Quick upper-bound prune: skip if this group cannot beat current best
           if (best) {
-            const maxPossible = upperBoundScore(four, skillW, waitW)
-            if (maxPossible <= best.score) continue
+            if (best.score >= 1.0) continue
           }
 
           const splits: [number, number][][] = [
@@ -144,18 +143,6 @@ function scoreMatch(
   //   0 occurrences → 1.0, 1 → 0.74, 2 → 0.55, 3 → 0.41
 
   return skillScore * skillW + waitScore * waitW + partnerScore * W_PARTNER + varietyScore * W_VARIETY
-}
-
-// ─── Upper-bound pruning ───────────────────────────────────────
-
-function upperBoundScore(
-  _four: PlayerCandidate[],
-  skillW: number,
-  waitW: number,
-): number {
-  // Ideal scenario: perfect skill balance (1.0) + everyone at max wait (1.0)
-  //                    + no repeat partners (1.0) + fresh matchup (1.0)
-  return skillW + waitW + W_PARTNER + W_VARIETY
 }
 
 export function ensureStats(

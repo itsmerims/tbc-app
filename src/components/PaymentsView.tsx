@@ -124,6 +124,7 @@ const PaymentsView: Component = () => {
   const [localClubFund, setLocalClubFund] = createSignal(store.clubFund)
   const [localNonShow, setLocalNonShow] = createSignal(store.nonShowPlayers)
   const [showGuide, setShowGuide] = createSignal(false)
+  const receiptId = Date.now().toString(36).slice(-4).toUpperCase()
 
   const syncAll = () => {
     store.setCourtCost(localCourtCost())
@@ -331,7 +332,7 @@ const PaymentsView: Component = () => {
                 Payment Receipt
               </div>
               <div class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
-                #TBC-{Date.now().toString(36).slice(-4).toUpperCase()}
+                #TBC-{receiptId}
               </div>
             </div>
 

@@ -169,7 +169,7 @@ const PlayerList: Component<Props> = (props) => {
     const sortKey = ui.playerSort
     const asc = ui.sortAsc
 
-    active.sort((a, b) => {
+    const sorted = [...active].sort((a, b) => {
       let va: number | string, vb: number | string
       if (sortKey === 'name') {
         va = a.name.toLowerCase()
@@ -186,7 +186,7 @@ const PlayerList: Component<Props> = (props) => {
       return asc ? (va as number) - (vb as number) : (vb as number) - (va as number)
     })
 
-    return [...active, ...inactive]
+    return [...sorted, ...inactive]
   })
 
   return (

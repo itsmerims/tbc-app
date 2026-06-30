@@ -9,7 +9,6 @@ interface CourtState {
   courts: Court[]
   queues: QueueGroup[]
   matchHistory: MatchRecord[]
-  matchCount: number
 
   addCourt: (label?: string) => void
   removeCourt: (id: string) => void
@@ -62,7 +61,6 @@ export const useCourtStore = createSolidStore<CourtState>()(
       courts: [],
       queues: [],
       matchHistory: [],
-      matchCount: 0,
 
       addCourt: (label) => {
         set((s) => ({
@@ -263,7 +261,6 @@ export const useCourtStore = createSolidStore<CourtState>()(
               : c
           ),
           matchHistory: [...s.matchHistory, match],
-          matchCount: s.matchCount + 1,
         }))
 
         return match
@@ -367,7 +364,6 @@ export const useCourtStore = createSolidStore<CourtState>()(
       deleteMatch: (index) => {
         set((s) => ({
           matchHistory: s.matchHistory.filter((_, i) => i !== index),
-          matchCount: Math.max(0, s.matchCount - 1),
         }))
       },
     }),
@@ -378,7 +374,6 @@ export const useCourtStore = createSolidStore<CourtState>()(
         courts: state.courts,
         queues: state.queues,
         matchHistory: state.matchHistory,
-        matchCount: state.matchCount,
       } as CourtState),
     }
   )

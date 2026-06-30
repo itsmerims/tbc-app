@@ -1,4 +1,4 @@
-import { createEffect, createSignal, Show, For } from 'solid-js'
+import { createEffect, createMemo, createSignal, Show, For } from 'solid-js'
 import { usePlayerStore } from './stores/playerStore'
 import { useCourtStore } from './stores/courtStore'
 import { useUIStore, type Tab } from './stores/uiStore'
@@ -44,20 +44,25 @@ export default function App() {
 
   const waitingPlayers = () =>
     players.players.filter((p) => {
-      const onLockedCourt = courts.courts.some(
-        (c) => c.locked && (c.team1.includes(p.name) || c.team2.includes(p.name))
+      const onAnyCourt = courts.courts.some(
+        (c) => c.team1.includes(p.name) || c.team2.includes(p.name)
       )
       const inQueue = courts.queues.some(
         (q) => q.team1.includes(p.name) || q.team2.includes(p.name)
       )
-      return !onLockedCourt && !inQueue
+      return !onAnyCourt && !inQueue
     })
 
+  const levelMap = createMemo(() => {
+    const map = new Map<string, number>()
+    for (const p of players.players) {
+      map.set(p.name.toLowerCase(), p.level)
+    }
+    return map
+  })
+
   const getPlayerLevel = (name: string) => {
-    const p = players.players.find(
-      (x) => x.name.toLowerCase() === name.toLowerCase()
-    )
-    return p?.level ?? 1
+    return levelMap().get(name.toLowerCase()) ?? 1
   }
 
   const handleSelectPlayer = (id: string) => {
@@ -227,12 +232,7 @@ export default function App() {
   }
 
   const handleAutoMatchmaker = () => {
-    const waiting = waitingPlayers().filter((p) => {
-      const onAnyCourt = courts.courts.some(
-        (c) => c.team1.includes(p.name) || c.team2.includes(p.name)
-      )
-      return !onAnyCourt
-    })
+    const waiting = waitingPlayers()
     if (waiting.length < 4) return
 
     const candidates = waiting.map((p) => ({
@@ -290,7 +290,6 @@ export default function App() {
       courts: [],
       queues: [],
       matchHistory: [],
-      matchCount: 0,
     })
     usePlayerStore.setState({
       players: [],
@@ -421,7 +420,6 @@ export default function App() {
           <StatsView
             playerStats={players.playerStats}
             matchHistory={courts.matchHistory}
-            matchCount={courts.matchCount}
             players={players.players}
             getPlayerLevel={getPlayerLevel}
           />

@@ -12,7 +12,6 @@ import {
 interface Props {
   playerStats: Record<string, PlayerStats>
   matchHistory: MatchRecord[]
-  matchCount: number
   players: Player[]
   getPlayerLevel: (name: string) => number
 }
@@ -90,6 +89,8 @@ const StatsView: Component<Props> = (props) => {
       .split(',')
       .map((s) => s.trim().toLowerCase())
       .filter(Boolean)
+
+  const reversedHistory = createMemo(() => [...props.matchHistory].reverse())
 
   const leaderboard = createMemo(() => {
     const minGames = ui.minGamesFilter
@@ -494,7 +495,7 @@ const StatsView: Component<Props> = (props) => {
                     </tr>
                   </thead>
                   <tbody>
-                    <For each={[...props.matchHistory].reverse()}>
+                    <For each={reversedHistory()}>
                       {(m, i) => {
                         const realIdx = props.matchHistory.length - 1 - i()
                         return (
