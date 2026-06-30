@@ -113,7 +113,7 @@ const PlayerCard: Component<{
         e.currentTarget.classList.remove('is-dragging')
       }}
       class={
-        `player-card p-3 rounded-xl border-2 transition-all duration-150 ` +
+        `player-card p-3 rounded-xl border-2 transition-all duration-150 relative ` +
         (p.active ? 'cursor-grab active:cursor-grabbing' : 'cursor-default opacity-50') +
         (props.selected
           ? ' border-blue-500/50 bg-blue-500/10 shadow-lg shadow-blue-500/10'
@@ -147,10 +147,11 @@ const PlayerCard: Component<{
       <div class="flex items-center gap-2 text-xs text-slate-500 mt-0.5 drag-aux-hide">
         <span class="tabular-nums">{formatTime(waitSec())}</span>
         <span class="text-slate-400/60">({formatTime(avgWait())})</span>
-        <span class="text-slate-300 dark:text-slate-600">|</span>
-        <span class="tabular-nums font-medium text-emerald-500">{props.stats[p.name]?.wins ?? 0}W</span>
-        <span class="tabular-nums text-red-400">{(props.stats[p.name]?.games ?? 0) - (props.stats[p.name]?.wins ?? 0)}L</span>
       </div>
+      <span class="absolute bottom-1.5 right-3 text-[10px] tabular-nums font-semibold drag-aux-hide">
+        <span class="text-emerald-500">{props.stats[p.name]?.wins ?? 0}</span>
+        <span class="text-red-400">-{(props.stats[p.name]?.games ?? 0) - (props.stats[p.name]?.wins ?? 0)}</span>
+      </span>
     </div>
   )
 }

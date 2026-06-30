@@ -286,7 +286,9 @@ export const useCourtStore = createSolidStore<CourtState>()(
       },
 
       getAvailableCourt: () => {
-        return get().courts.find((c) => !c.locked)
+        return get().courts.find(
+          (c) => !c.locked && c.team1.every((p) => !p) && c.team2.every((p) => !p)
+        )
       },
 
       autoMatchmaker: (waitingPlayers) => {
