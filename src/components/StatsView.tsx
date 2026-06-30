@@ -28,9 +28,9 @@ const INSIGHT_ICONS: Record<string, string> = {
 }
 
 function rankSuffix(i: number): string {
-  if (i === 0) return 'st'
-  if (i === 1) return 'nd'
-  if (i === 2) return 'rd'
+  if (i === 1) return 'st'
+  if (i === 2) return 'nd'
+  if (i === 3) return 'rd'
   return 'th'
 }
 
