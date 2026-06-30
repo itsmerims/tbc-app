@@ -224,7 +224,12 @@ export default function App() {
   }
 
   const handleAutoMatchmaker = () => {
-    const waiting = waitingPlayers()
+    const waiting = waitingPlayers().filter((p) => {
+      const onAnyCourt = courts.courts.some(
+        (c) => c.team1.includes(p.name) || c.team2.includes(p.name)
+      )
+      return !onAnyCourt
+    })
     if (waiting.length < 4) return
 
     const candidates = waiting.map((p) => ({
