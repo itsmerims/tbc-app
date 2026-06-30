@@ -411,7 +411,7 @@ export default function App() {
                   </div>
                 </div>
                 <div class="flex-1 court-grid-container scrollbar-auto-hide">
-                  <div class="court-grid">
+                  <div class="court-grid p-4">
                     <For each={courts.courts}>
                       {(c) => (
                         <CourtCard

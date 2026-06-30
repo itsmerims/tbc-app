@@ -226,8 +226,8 @@ const PlayerList: Component<Props> = (props) => {
         </div>
       </div>
 
-      <div class="flex-1 overflow-y-auto p-3 scrollbar-auto-hide">
-        <div class="grid grid-cols-2 gap-2">
+      <div class="flex-1 overflow-y-auto p-4 scrollbar-auto-hide">
+        <div class="grid grid-cols-2 gap-3">
         <For each={sortedPlayers()}>
           {(p) => (
             <PlayerCard
