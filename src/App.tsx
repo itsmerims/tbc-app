@@ -2,7 +2,9 @@ import { createEffect, createSignal, Show, For } from 'solid-js'
 import { usePlayerStore } from './stores/playerStore'
 import { useCourtStore } from './stores/courtStore'
 import { useUIStore, type Tab } from './stores/uiStore'
+import { usePaymentStore } from './stores/paymentStore'
 import { recomputeStatsFromHistory } from './lib/algorithms'
+import localforage from 'localforage'
 import Navbar from './components/Navbar'
 import CollapsiblePanel from './components/CollapsiblePanel'
 import PlayerList from './components/PlayerList'
@@ -256,6 +258,46 @@ export default function App() {
     }
   }
 
+  const handleExportData = async () => {
+    try {
+      const data: Record<string, unknown> = {}
+      const keys = ['tbc-courts', 'tbc-players', 'tbc-ui', 'tbc-payments']
+      for (const key of keys) {
+        const raw = await localforage.getItem<string>(key)
+        if (raw) {
+          try { data[key] = JSON.parse(raw) } catch { data[key] = raw }
+        }
+      }
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `tbc-backup-${new Date().toISOString().slice(0, 10)}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      console.error('Export failed', err)
+    }
+  }
+
+  const handleDeleteAllData = async () => {
+    if (!confirm('Delete ALL data? This includes match history, players, courts, queues, and payments. This cannot be undone.')) return
+    if (!confirm('Are you absolutely sure? All data will be permanently lost.')) return
+
+    const payments = usePaymentStore()
+    useCourtStore.setState({
+      courts: [],
+      queues: [],
+      matchHistory: [],
+      matchCount: 0,
+    })
+    usePlayerStore.setState({
+      players: [],
+      playerStats: {},
+    })
+    payments.clearAll()
+  }
+
   const tabContent = (tab: Tab) => {
     switch (tab) {
       case 'home':
@@ -396,6 +438,8 @@ export default function App() {
         activeTab={ui.activeTab}
         onTabChange={(t) => ui.setActiveTab(t)}
         onToggleTheme={() => ui.toggleTheme()}
+        onExportData={handleExportData}
+        onDeleteAllData={handleDeleteAllData}
         theme={ui.theme}
       />
 

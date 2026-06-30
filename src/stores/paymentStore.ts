@@ -21,6 +21,7 @@ interface PaymentState {
   addShuttle: (row?: ShuttleRow) => void
   updateShuttle: (index: number, data: Partial<ShuttleRow>) => void
   removeShuttle: (index: number) => void
+  clearAll: () => void
 
   compute: () => {
     shuttleTotal: number
@@ -76,6 +77,18 @@ export const usePaymentStore = createSolidStore<PaymentState>()(
         set((s) => ({
           shuttles: s.shuttles.filter((_, i) => i !== index),
         }))
+      },
+
+      clearAll: () => {
+        set({
+          courtCost: 0,
+          courtHours: 0,
+          queueMasterFee: 0,
+          clubFund: 0,
+          numPlayers: 0,
+          nonShowPlayers: 0,
+          shuttles: [],
+        })
       },
 
       compute: () => {

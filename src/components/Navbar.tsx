@@ -5,6 +5,8 @@ interface Props {
   activeTab: Tab
   onTabChange: (t: Tab) => void
   onToggleTheme: () => void
+  onExportData: () => void
+  onDeleteAllData: () => void
   theme: string
 }
 
@@ -38,13 +40,31 @@ const Navbar: Component<Props> = (props) => {
         ))}
       </div>
 
-      <button
-        onClick={props.onToggleTheme}
-        class="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-200 active:scale-90"
-        aria-label="Toggle theme"
-      >
-        {props.theme === 'dark' ? '☀️' : '🌙'}
-      </button>
+      <div class="flex items-center gap-1">
+        <button
+          onClick={props.onExportData}
+          class="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-200 active:scale-90 text-sm"
+          aria-label="Export data"
+          title="Export all data"
+        >
+          📥
+        </button>
+        <button
+          onClick={props.onDeleteAllData}
+          class="p-2 rounded-lg hover:bg-red-500/10 dark:hover:bg-red-400/10 transition-all duration-200 active:scale-90 text-sm"
+          aria-label="Delete all data"
+          title="Delete all data"
+        >
+          🗑️
+        </button>
+        <button
+          onClick={props.onToggleTheme}
+          class="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-200 active:scale-90"
+          aria-label="Toggle theme"
+        >
+          {props.theme === 'dark' ? '☀️' : '🌙'}
+        </button>
+      </div>
     </nav>
   )
 }
