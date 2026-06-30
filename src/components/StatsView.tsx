@@ -243,7 +243,7 @@ const StatsView: Component<Props> = (props) => {
               class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full"
               style={`background:${item.dot};box-shadow:0 0 6px ${item.dot}`}
             />
-            <div class="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1 font-semibold">
+            <div class="text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1 font-semibold">
               {item.label}
             </div>
             <div class="text-xl font-black tabular-nums tracking-tight text-slate-900 dark:text-white">
@@ -253,35 +253,13 @@ const StatsView: Component<Props> = (props) => {
         ))}
       </div>
 
-      {/* ── Filter Bar ── */}
-      <div class="glass-card-solid rounded-xl p-3 flex flex-wrap items-center gap-3">
-        <span class="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 font-semibold">Filters</span>
-        <div class="flex items-center gap-2 flex-1 min-w-0">
-          <input
-            value={ui.excludeStats}
-            onInput={(e) => ui.setExcludeStats(e.currentTarget.value)}
-            placeholder="Exclude from stats..."
-            class="flex-1 min-w-0 px-2.5 py-1.5 text-xs rounded-lg bg-white/40 dark:bg-white/[0.04] border border-white/20 dark:border-white/[0.08] outline-none focus:border-blue-400/50 focus:bg-white/60 dark:focus:bg-white/[0.08] transition-all placeholder:text-slate-400/60"
-          />
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Min Games</span>
-          <input
-            type="number"
-            value={ui.minGamesFilter}
-            onInput={(e) => ui.setMinGamesFilter(parseInt(e.currentTarget.value) || 0)}
-            class="w-14 px-2 py-1.5 text-xs rounded-lg bg-white/40 dark:bg-white/[0.04] border border-white/20 dark:border-white/[0.08] outline-none focus:border-blue-400/50 transition-all"
-          />
-        </div>
-      </div>
-
       {/* ── Skill Distribution + Insights (side-by-side) ── */}
       <div class="glass-card-solid rounded-xl">
         <button
           onClick={() => setSkillOpen((p) => !p)}
           class="w-full flex items-center justify-between px-4 py-3 cursor-pointer touch-action-manipulation"
         >
-          <h4 class="text-[11px] uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400">
+          <h4 class="text-sm uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400">
             Skill Level &amp; Insights
           </h4>
           <svg
@@ -312,7 +290,7 @@ const StatsView: Component<Props> = (props) => {
                     return (
                       <div class="flex items-center gap-3">
                         <div class="w-16 shrink-0">
-                          <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                          <span class="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                             {LEVEL_NAMES[level - 1]}
                           </span>
                         </div>
@@ -328,10 +306,10 @@ const StatsView: Component<Props> = (props) => {
                           <span class="text-xs font-bold tabular-nums text-slate-900 dark:text-white">{sd.players}</span>
                         </div>
                         <div class="w-16 text-right shrink-0">
-                          <span class="text-[11px] tabular-nums text-slate-500 dark:text-slate-400 font-medium">{avgWin}%</span>
+                          <span class="text-xs tabular-nums text-slate-500 dark:text-slate-400 font-medium">{avgWin}%</span>
                         </div>
                         <div class="w-12 text-right shrink-0">
-                          <span class="text-[11px] tabular-nums text-slate-500 dark:text-slate-400 font-medium">{avgG}</span>
+                          <span class="text-xs tabular-nums text-slate-500 dark:text-slate-400 font-medium">{avgG}</span>
                         </div>
                       </div>
                     )
@@ -346,10 +324,10 @@ const StatsView: Component<Props> = (props) => {
                         <div class="flex items-center gap-2.5">
                           <span class="text-base shrink-0 w-6 text-center">{INSIGHT_ICONS[item.title] || '📊'}</span>
                           <div class="min-w-0">
-                            <div class="text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400 font-semibold">
+                            <div class="text-[11px] uppercase tracking-widest text-slate-500 dark:text-slate-400 font-semibold">
                               {item.title}
                             </div>
-                            <div class="text-sm font-bold text-slate-900 dark:text-white truncate tabular-nums">
+                            <div class="text-base font-bold text-slate-900 dark:text-white truncate tabular-nums">
                               {item.value}
                             </div>
                           </div>
@@ -358,7 +336,7 @@ const StatsView: Component<Props> = (props) => {
                     )}
                   </For>
                   {insights().length === 0 && (
-                    <p class="text-xs text-slate-500 text-center py-4">No match data yet.</p>
+                    <p class="text-sm text-slate-500 text-center py-4">No match data yet.</p>
                   )}
                 </div>
               </div>
@@ -373,17 +351,10 @@ const StatsView: Component<Props> = (props) => {
           onClick={() => setLeaderboardOpen((p) => !p)}
           class="w-full flex items-center justify-between px-4 py-3 cursor-pointer touch-action-manipulation"
         >
-          <h4 class="text-[11px] uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400">
+          <h4 class="text-sm uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400">
             Leaderboard
           </h4>
           <div class="flex items-center gap-3">
-            <input
-              value={ui.excludePlayers}
-              onInput={(e) => ui.setExcludePlayers(e.currentTarget.value)}
-              placeholder="Exclude players..."
-              class="w-48 px-2.5 py-1.5 text-xs rounded-lg bg-white/40 dark:bg-white/[0.04] border border-white/20 dark:border-white/[0.08] outline-none focus:border-blue-400/50 transition-all placeholder:text-slate-400/60"
-              onClick={(e) => e.stopPropagation()}
-            />
             <svg
               class={`w-4 h-4 text-slate-400 transition-transform duration-300 ${leaderboardOpen() ? 'rotate-180' : ''}`}
               viewBox="0 0 24 24"
@@ -401,8 +372,31 @@ const StatsView: Component<Props> = (props) => {
           class={`overflow-hidden transition-all duration-300 ease-out ${leaderboardOpen() ? 'max-h-[9999px] opacity-100' : 'max-h-0 opacity-0'}`}
         >
           <div class="px-4 pb-4 border-t border-white/10 dark:border-white/[0.06]">
+            <div class="flex flex-wrap items-center gap-3 pt-4">
+              <input
+                value={ui.excludePlayers}
+                onInput={(e) => ui.setExcludePlayers(e.currentTarget.value)}
+                placeholder="Exclude players..."
+                class="flex-1 min-w-0 px-2.5 py-1.5 text-sm rounded-lg bg-white/40 dark:bg-white/[0.04] border border-white/20 dark:border-white/[0.08] outline-none focus:border-blue-400/50 transition-all placeholder:text-slate-400/60"
+              />
+              <input
+                value={ui.excludeStats}
+                onInput={(e) => ui.setExcludeStats(e.currentTarget.value)}
+                placeholder="Exclude from stats..."
+                class="flex-1 min-w-0 px-2.5 py-1.5 text-sm rounded-lg bg-white/40 dark:bg-white/[0.04] border border-white/20 dark:border-white/[0.08] outline-none focus:border-blue-400/50 focus:bg-white/60 dark:focus:bg-white/[0.08] transition-all placeholder:text-slate-400/60"
+              />
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Min Games</span>
+                <input
+                  type="number"
+                  value={ui.minGamesFilter}
+                  onInput={(e) => ui.setMinGamesFilter(parseInt(e.currentTarget.value) || 0)}
+                  class="w-16 px-2 py-1.5 text-sm rounded-lg bg-white/40 dark:bg-white/[0.04] border border-white/20 dark:border-white/[0.08] outline-none focus:border-blue-400/50 transition-all"
+                />
+              </div>
+            </div>
             <div class="overflow-x-auto pt-4">
-              <table class="w-full text-[11px]">
+              <table class="w-full text-sm">
                 <thead>
                   <tr class="border-b border-white/10 dark:border-white/[0.06]">
                     <th class="text-left py-2 pr-3 font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">#</th>
@@ -470,7 +464,7 @@ const StatsView: Component<Props> = (props) => {
           onClick={() => setResultsOpen((p) => !p)}
           class="w-full flex items-center justify-between px-4 py-3 cursor-pointer touch-action-manipulation"
         >
-          <h4 class="text-[11px] uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400">
+          <h4 class="text-sm uppercase tracking-widest font-bold text-slate-500 dark:text-slate-400">
             Game Results
           </h4>
           <svg
@@ -490,10 +484,10 @@ const StatsView: Component<Props> = (props) => {
         >
           <div class="px-4 pb-4 border-t border-white/10 dark:border-white/[0.06]">
             {props.matchHistory.length === 0 ? (
-              <p class="text-xs text-slate-500 text-center py-4">No matches yet.</p>
+              <p class="text-sm text-slate-500 text-center py-4">No matches yet.</p>
             ) : (
               <div class="overflow-x-auto pt-4">
-                <table class="w-full text-[11px]">
+                <table class="w-full text-sm">
                   <thead>
                     <tr class="border-b border-white/10 dark:border-white/[0.06]">
                       <th class="text-left py-2 pr-3 font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">#</th>
@@ -519,7 +513,7 @@ const StatsView: Component<Props> = (props) => {
                             <td class="py-2 pr-3 text-slate-600 dark:text-slate-400">{m.team1.join(', ')}</td>
                             <td class="py-2 pr-3 text-slate-600 dark:text-slate-400">{m.team2.join(', ')}</td>
                             <td class="py-2 pr-3">
-                              <span class={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${m.winner === 1 ? 'bg-blue-500/15 text-blue-500' : 'bg-red-500/15 text-red-400'}`}>
+                              <span class={`text-xs font-bold px-1.5 py-0.5 rounded-full ${m.winner === 1 ? 'bg-blue-500/15 text-blue-500' : 'bg-red-500/15 text-red-400'}`}>
                                 Team {m.winner}
                               </span>
                             </td>
@@ -533,7 +527,7 @@ const StatsView: Component<Props> = (props) => {
                               <div class="flex gap-1">
                                 <button
                                   onClick={() => ui.openEditMatchModal(realIdx)}
-                                  class="text-[10px] text-slate-400 hover:text-slate-300 transition-colors active:scale-90 touch-action-manipulation"
+                                  class="text-xs text-slate-400 hover:text-slate-300 transition-colors active:scale-90 touch-action-manipulation"
                                 >
                                   ✏️
                                 </button>
@@ -541,7 +535,7 @@ const StatsView: Component<Props> = (props) => {
                                   onClick={() => {
                                     if (confirm('Delete this match result?')) courts.deleteMatch(realIdx)
                                   }}
-                                  class="text-[10px] text-red-400/60 hover:text-red-400 transition-colors active:scale-90 touch-action-manipulation"
+                                  class="text-xs text-red-400/60 hover:text-red-400 transition-colors active:scale-90 touch-action-manipulation"
                                 >
                                   🗑️
                                 </button>
