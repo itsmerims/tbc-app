@@ -1,4 +1,4 @@
-import { createSignal, createMemo, createEffect, For, type Component } from 'solid-js'
+import { createSignal, createMemo, For, type Component } from 'solid-js'
 import { usePaymentStore } from '../stores/paymentStore'
 import { usePlayerStore } from '../stores/playerStore'
 import { formatPeso } from '../lib/formats'
@@ -116,8 +116,6 @@ const ShuttleRowEditor: Component<{
 const PaymentsView: Component = () => {
   const store = usePaymentStore()
   const playerStore = usePlayerStore()
-  const autoPlayers = createMemo(() => playerStore.players.length)
-  createEffect(() => store.setNumPlayers(autoPlayers()))
 
   // Local editable signals — sync to store only on blur/enter
   const [localCourtCost, setLocalCourtCost] = createSignal(store.courtCost)
@@ -135,7 +133,34 @@ const PaymentsView: Component = () => {
     store.setNonShowPlayers(localNonShow())
   }
 
-  const summary = createMemo(() => store.compute())
+  const summary = createMemo(() => {
+    const totalPlayers = playerStore.players.length
+    const shuttleTotal = store.shuttles.reduce((sum, row) => sum + (row.tubePrice / 12) * row.qty, 0)
+    const courtTotal = store.courtCost * store.courtHours
+    const otherTotal = store.queueMasterFee + store.clubFund
+    const totalCost = shuttleTotal + courtTotal + otherTotal
+
+    const nsp = store.nonShowPlayers
+    const pp = Math.max(totalPlayers - nsp, 1)
+    const courtPerPlayer = totalPlayers ? courtTotal / totalPlayers : 0
+    const playingCost = courtPerPlayer + ((otherTotal + shuttleTotal) / pp)
+    const nonShowCost = courtPerPlayer
+    const costPerPlayer = totalPlayers ? totalCost / totalPlayers : 0
+
+    return {
+      shuttleTotal,
+      courtTotal,
+      totalCost,
+      costPerPlayer,
+      playingCost,
+      nonShowCost,
+      clubFund: store.clubFund,
+      queueFee: store.queueMasterFee,
+      numPlayers: totalPlayers,
+      nonShowPlayers: nsp,
+      playingPlayers: pp,
+    }
+  })
 
   return (
     <div class="h-full overflow-y-auto p-6 scrollbar-auto-hide">
@@ -209,7 +234,7 @@ const PaymentsView: Component = () => {
                   No. of Players
                 </label>
                 <div class="w-full rounded-xl border border-blue-400/30 bg-blue-500/10 dark:bg-blue-400/[0.06] text-sm text-blue-500 dark:text-blue-400 font-bold px-3 py-2.5 tabular-nums">
-                  {autoPlayers()}
+                   {summary().numPlayers}
                 </div>
               </div>
             </div>
@@ -228,7 +253,7 @@ const PaymentsView: Component = () => {
                   Playing Players
                 </label>
                 <div class="w-full rounded-xl border border-amber-400/30 bg-amber-500/10 dark:bg-amber-400/[0.06] text-sm text-amber-500 dark:text-amber-400 font-bold px-3 py-2.5 tabular-nums">
-                  {Math.max(autoPlayers() - localNonShow(), 0)}
+                  {Math.max(summary().numPlayers - localNonShow(), 0)}
                 </div>
               </div>
             </div>
