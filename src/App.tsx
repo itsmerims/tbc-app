@@ -179,15 +179,11 @@ export default function App() {
     const selectedId = selectedPlayerId()
 
     if (slotPlayerName) {
-      if (selectedId) {
-        handleAssignToSlot(targetType, targetId, team, slot)
-      } else {
-        const slotPlayer = players.players.find(
-          (p) => p.name === slotPlayerName
-        )
-        if (slotPlayer) {
-          setSelectedPlayerId(slotPlayer.id)
-        }
+      const slotPlayer = players.players.find(
+        (p) => p.name === slotPlayerName
+      )
+      if (slotPlayer) {
+        setSelectedPlayerId(slotPlayer.id)
       }
     } else if (selectedId) {
       handleAssignToSlot(targetType, targetId, team, slot)
