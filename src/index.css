@@ -198,7 +198,7 @@ input[type="number"] {
 }
 
 .court-card-player-name {
-  font-size: clamp(0.6rem, 1.5cqw, 0.85rem) !important;
+  font-size: clamp(0.75rem, 2cqw, 1rem) !important;
 }
 
 .court-card-btn {

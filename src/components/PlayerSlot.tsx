@@ -64,7 +64,7 @@ const PlayerSlot: Component<Props> = (props) => {
           >
             {LEVEL_NAMES[Number(level()) - 1]}
           </span>
-          <div class="font-semibold text-xs mt-1 truncate tracking-tight">
+          <div class="font-semibold text-sm mt-1 truncate tracking-tight">
             {props.playerName}
           </div>
         </div>
