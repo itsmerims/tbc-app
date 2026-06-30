@@ -312,26 +312,27 @@ const PaymentsView: Component = () => {
           >
             ↻ Update Totals
           </button>
+
+          {/* Guide Button */}
+          <button
+            onClick={() => setShowGuide(true)}
+            class="w-full py-2.5 border-2 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 text-xs font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/40 active:scale-[0.97] transition-all duration-200 touch-action-manipulation"
+          >
+            📖 Payment Guide
+          </button>
         </div>
 
         {/* ── Right: 2/5 — Receipt Summary ── */}
         <div class="lg:col-span-2">
           <div class="glass-card-solid rounded-2xl p-6 border border-white/10 sticky top-0">
             {/* Receipt Header */}
-            <div class="text-center mb-5 pb-4 border-b border-dashed border-white/10 relative">
+            <div class="text-center mb-5 pb-4 border-b border-dashed border-white/10">
               <div class="text-[10px] uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 font-semibold">
                 Payment Receipt
               </div>
               <div class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
                 #TBC-{Date.now().toString(36).slice(-4).toUpperCase()}
               </div>
-              <button
-                onClick={() => setShowGuide(true)}
-                class="absolute right-0 top-0 w-6 h-6 rounded-full border border-slate-400/30 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:border-slate-400/60 text-xs font-bold transition-all duration-200 active:scale-90 touch-action-manipulation"
-                title="Payment guide"
-              >
-                ?
-              </button>
             </div>
 
             {/* Line Items */}

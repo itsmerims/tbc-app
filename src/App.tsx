@@ -41,15 +41,13 @@ export default function App() {
 
   const waitingPlayers = () =>
     players.players.filter((p) => {
-      const onCourt = courts.courts.some(
-        (c) =>
-          c.team1.includes(p.name) || c.team2.includes(p.name)
+      const onLockedCourt = courts.courts.some(
+        (c) => c.locked && (c.team1.includes(p.name) || c.team2.includes(p.name))
       )
       const inQueue = courts.queues.some(
-        (q) =>
-          q.team1.includes(p.name) || q.team2.includes(p.name)
+        (q) => q.team1.includes(p.name) || q.team2.includes(p.name)
       )
-      return !onCourt && !inQueue
+      return !onLockedCourt && !inQueue
     })
 
   const getPlayerLevel = (name: string) => {
