@@ -164,32 +164,37 @@ input[type="number"] {
 }
 
 /* ── Container-query court grid ── */
-.court-grid-container {
+.court-grid-container,
+.queue-grid-container {
   container-type: inline-size;
   container-name: court-grid;
   overflow-x: hidden;
   overflow-y: auto;
 }
 
-.court-grid {
+.court-grid,
+.queue-grid {
   display: grid;
   gap: 0.75rem;
   grid-template-columns: 1fr;
   align-content: start;
 }
 
-.court-grid > * {
+.court-grid > *,
+.queue-grid > * {
   min-width: 0;
 }
 
 @container court-grid (min-width: 420px) {
-  .court-grid {
+  .court-grid,
+  .queue-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
 
 @container court-grid (min-width: 700px) {
-  .court-grid {
+  .court-grid,
+  .queue-grid {
     grid-template-columns: 1fr 1fr 1fr;
   }
 }

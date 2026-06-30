@@ -330,7 +330,8 @@ export default function App() {
                   </button>
                 }
               >
-                <div class="space-y-3 p-4">
+                <div class="queue-grid-container flex-1">
+                  <div class="queue-grid p-4">
                   <For each={courts.queues}>
                     {(q) => (
                       <QueueCard
@@ -351,6 +352,7 @@ export default function App() {
                       />
                     )}
                   </For>
+                  </div>
                 </div>
               </CollapsiblePanel>
 
