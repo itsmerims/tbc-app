@@ -42,8 +42,6 @@ const StatsView: Component<Props> = (props) => {
   const [leaderboardOpen, setLeaderboardOpen] = createSignal(true)
   const [resultsOpen, setResultsOpen] = createSignal(true)
   const courts = useCourtStore()
-  const [editingIndex, setEditingIndex] = createSignal(-1)
-  const [editData, setEditData] = createSignal({ score1: 0, score2: 0, winner: 1 as 1 | 2, duration: '' })
 
   const excludedStats = () =>
     ui.excludeStats
@@ -512,9 +510,8 @@ const StatsView: Component<Props> = (props) => {
                     <For each={[...props.matchHistory].reverse()}>
                       {(m, i) => {
                         const realIdx = props.matchHistory.length - 1 - i()
-                        const editing = editingIndex() === realIdx
                         return (
-                          <tr class={`border-b border-white/[0.03] transition-colors ${editing ? 'bg-blue-500/5' : 'hover:bg-white/[0.02]'}`}>
+                          <tr class="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]">
                             <td class="py-2 pr-3 tabular-nums text-slate-600 dark:text-slate-400 font-medium">
                               {props.matchHistory.length - i()}
                             </td>
@@ -522,106 +519,33 @@ const StatsView: Component<Props> = (props) => {
                             <td class="py-2 pr-3 text-slate-600 dark:text-slate-400">{m.team1.join(', ')}</td>
                             <td class="py-2 pr-3 text-slate-600 dark:text-slate-400">{m.team2.join(', ')}</td>
                             <td class="py-2 pr-3">
-                              {editing ? (
-                                <div class="flex gap-1">
-                                  <button
-                                    onClick={() => setEditData((d) => ({ ...d, winner: d.winner === 1 ? 2 : 1 }))}
-                                    class={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border transition-all ${editData().winner === 1 ? 'bg-blue-500/15 text-blue-500 border-blue-400/30' : 'bg-white/40 text-slate-400 border-white/20'}`}
-                                  >
-                                    Team 1
-                                  </button>
-                                  <button
-                                    onClick={() => setEditData((d) => ({ ...d, winner: d.winner === 2 ? 1 : 2 }))}
-                                    class={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border transition-all ${editData().winner === 2 ? 'bg-red-500/15 text-red-400 border-red-400/30' : 'bg-white/40 text-slate-400 border-white/20'}`}
-                                  >
-                                    Team 2
-                                  </button>
-                                </div>
-                              ) : (
-                                <span class={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${m.winner === 1 ? 'bg-blue-500/15 text-blue-500' : 'bg-red-500/15 text-red-400'}`}>
-                                  Team {m.winner}
-                                </span>
-                              )}
+                              <span class={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${m.winner === 1 ? 'bg-blue-500/15 text-blue-500' : 'bg-red-500/15 text-red-400'}`}>
+                                Team {m.winner}
+                              </span>
                             </td>
                             <td class="py-2 pr-3 tabular-nums font-bold">
-                              {editing ? (
-                                <div class="flex items-center gap-1">
-                                  <input
-                                    type="number"
-                                    value={editData().score1}
-                                    onInput={(e) => setEditData((d) => ({ ...d, score1: parseInt(e.currentTarget.value) || 0 }))}
-                                    class="w-10 px-1 py-0.5 text-xs rounded border border-white/20 bg-white/40 dark:bg-white/[0.04] text-slate-900 dark:text-white outline-none focus:border-blue-400/50 text-center"
-                                  />
-                                  <span class="text-slate-400">—</span>
-                                  <input
-                                    type="number"
-                                    value={editData().score2}
-                                    onInput={(e) => setEditData((d) => ({ ...d, score2: parseInt(e.currentTarget.value) || 0 }))}
-                                    class="w-10 px-1 py-0.5 text-xs rounded border border-white/20 bg-white/40 dark:bg-white/[0.04] text-slate-900 dark:text-white outline-none focus:border-blue-400/50 text-center"
-                                  />
-                                </div>
-                              ) : (
-                                <span class="text-slate-800 dark:text-slate-200">{m.score1} — {m.score2}</span>
-                              )}
+                              <span class="text-slate-800 dark:text-slate-200">{m.score1} — {m.score2}</span>
                             </td>
                             <td class="py-2 pr-3 tabular-nums">
-                              {editing ? (
-                                <input
-                                  type="text"
-                                  value={editData().duration}
-                                  onInput={(e) => setEditData((d) => ({ ...d, duration: e.currentTarget.value }))}
-                                  class="w-16 px-1 py-0.5 text-xs rounded border border-white/20 bg-white/40 dark:bg-white/[0.04] text-slate-900 dark:text-white outline-none focus:border-blue-400/50"
-                                />
-                              ) : (
-                                <span class="text-slate-500 dark:text-slate-400">{m.duration}</span>
-                              )}
+                              <span class="text-slate-500 dark:text-slate-400">{m.duration}</span>
                             </td>
                             <td class="py-2 text-center">
-                              {editing ? (
-                                <div class="flex gap-1">
-                                  <button
-                                    onClick={() => {
-                                      const d = editData()
-                                      courts.updateMatch(realIdx, {
-                                        score1: d.score1,
-                                        score2: d.score2,
-                                        winner: d.winner,
-                                        duration: d.duration,
-                                      })
-                                      setEditingIndex(-1)
-                                    }}
-                                    class="text-[10px] text-emerald-500 hover:text-emerald-400 font-bold transition-colors active:scale-90 touch-action-manipulation"
-                                  >
-                                    ✓
-                                  </button>
-                                  <button
-                                    onClick={() => setEditingIndex(-1)}
-                                    class="text-[10px] text-slate-400 hover:text-slate-300 transition-colors active:scale-90 touch-action-manipulation"
-                                  >
-                                    ✕
-                                  </button>
-                                </div>
-                              ) : (
-                                <div class="flex gap-1">
-                                  <button
-                                    onClick={() => {
-                                      setEditingIndex(realIdx)
-                                      setEditData({ score1: m.score1, score2: m.score2, winner: m.winner, duration: m.duration })
-                                    }}
-                                    class="text-[10px] text-slate-400 hover:text-slate-300 transition-colors active:scale-90 touch-action-manipulation"
-                                  >
-                                    ✏️
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      if (confirm('Delete this match result?')) courts.deleteMatch(realIdx)
-                                    }}
-                                    class="text-[10px] text-red-400/60 hover:text-red-400 transition-colors active:scale-90 touch-action-manipulation"
-                                  >
-                                    🗑️
-                                  </button>
-                                </div>
-                              )}
+                              <div class="flex gap-1">
+                                <button
+                                  onClick={() => ui.openEditMatchModal(realIdx)}
+                                  class="text-[10px] text-slate-400 hover:text-slate-300 transition-colors active:scale-90 touch-action-manipulation"
+                                >
+                                  ✏️
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (confirm('Delete this match result?')) courts.deleteMatch(realIdx)
+                                  }}
+                                  class="text-[10px] text-red-400/60 hover:text-red-400 transition-colors active:scale-90 touch-action-manipulation"
+                                >
+                                  🗑️
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         )

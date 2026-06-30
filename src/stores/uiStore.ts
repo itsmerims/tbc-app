@@ -21,7 +21,8 @@ interface UIState {
   statsModalPlayer: string | null
   statsTableModalOpen: boolean
   statsTableModalPlayer: string | null
-  editMatchIndex: number | null
+  editMatchModalOpen: boolean
+  editingMatchIndex: number | null
   playersPanelOpen: boolean
   queuePanelOpen: boolean
 
@@ -40,7 +41,8 @@ interface UIState {
   closeStatsModal: () => void
   openStatsTableModal: (player: string) => void
   closeStatsTableModal: () => void
-  setEditMatchIndex: (i: number | null) => void
+  openEditMatchModal: (index: number) => void
+  closeEditMatchModal: () => void
   togglePlayersPanel: () => void
   toggleQueuePanel: () => void
 }
@@ -62,7 +64,8 @@ export const useUIStore = createSolidStore<UIState>()(
       statsModalPlayer: null,
       statsTableModalOpen: false,
       statsTableModalPlayer: null,
-      editMatchIndex: null,
+      editMatchModalOpen: false,
+      editingMatchIndex: null,
       playersPanelOpen: true,
       queuePanelOpen: true,
 
@@ -94,7 +97,10 @@ export const useUIStore = createSolidStore<UIState>()(
         set({ statsTableModalOpen: true, statsTableModalPlayer: player }),
       closeStatsTableModal: () =>
         set({ statsTableModalOpen: false, statsTableModalPlayer: null }),
-      setEditMatchIndex: (i) => set({ editMatchIndex: i }),
+      openEditMatchModal: (index) =>
+        set({ editMatchModalOpen: true, editingMatchIndex: index }),
+      closeEditMatchModal: () =>
+        set({ editMatchModalOpen: false, editingMatchIndex: null }),
       togglePlayersPanel: () => set((s) => ({ playersPanelOpen: !s.playersPanelOpen })),
       toggleQueuePanel: () => set((s) => ({ queuePanelOpen: !s.queuePanelOpen })),
     }),

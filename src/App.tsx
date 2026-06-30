@@ -15,6 +15,7 @@ import StatsView from './components/StatsView'
 import PaymentsView from './components/PaymentsView'
 import PlayerStatsModal from './components/PlayerStatsModal'
 import PlayerStatsTableModal from './components/PlayerStatsTableModal'
+import MatchEditModal from './components/MatchEditModal'
 
 export default function App() {
   const players = usePlayerStore()
@@ -469,6 +470,14 @@ export default function App() {
           players={players.players}
           getPlayerLevel={getPlayerLevel}
           onClose={() => ui.closeStatsTableModal()}
+        />
+      </Show>
+
+      <Show when={ui.editMatchModalOpen && ui.editingMatchIndex !== null}>
+        <MatchEditModal
+          index={ui.editingMatchIndex!}
+          match={courts.matchHistory[ui.editingMatchIndex!]}
+          onClose={() => ui.closeEditMatchModal()}
         />
       </Show>
     </div>
