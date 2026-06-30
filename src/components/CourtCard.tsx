@@ -254,14 +254,14 @@ const CourtCard: Component<Props> = (props) => {
                       }
                     >
                       {name ? (
-                        <div class="flex items-center justify-center gap-1.5 truncate">
+                        <div class="flex flex-col items-center gap-0.5">
                           <span
-                            class="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-[0.15em] shrink-0"
+                            class="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-[0.15em]"
                             style={`color:var(--level-text-${lv});background:color-mix(in srgb,var(--color-level-${lv}) 18%,var(--badge-mix-base));border:1px solid color-mix(in srgb,var(--color-level-${lv}) 30%,transparent)`}
                           >
                             {LEVEL_NAMES[lv - 1]}
                           </span>
-                          <span class="truncate">{name}</span>
+                          <span class="truncate max-w-full">{name}</span>
                         </div>
                       ) : (
                         <span class="text-slate-400 italic court-card-player-name">empty</span>
@@ -325,14 +325,14 @@ const CourtCard: Component<Props> = (props) => {
                       }
                     >
                       {name ? (
-                        <div class="flex items-center justify-center gap-1.5 truncate">
+                        <div class="flex flex-col items-center gap-0.5">
                           <span
-                            class="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-[0.15em] shrink-0"
+                            class="text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-[0.15em]"
                             style={`color:var(--level-text-${lv});background:color-mix(in srgb,var(--color-level-${lv}) 18%,var(--badge-mix-base));border:1px solid color-mix(in srgb,var(--color-level-${lv}) 30%,transparent)`}
                           >
                             {LEVEL_NAMES[lv - 1]}
                           </span>
-                          <span class="truncate">{name}</span>
+                          <span class="truncate max-w-full">{name}</span>
                         </div>
                       ) : (
                         <span class="text-slate-400 italic court-card-player-name">empty</span>
