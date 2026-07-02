@@ -30,6 +30,10 @@ export default function App() {
     team: 'team1' | 'team2'
     players: [string, string]
   } | null>(null)
+  const [autoRandomTarget, setAutoRandomTarget] = createSignal<{
+    type: 'court' | 'queue'
+    id: string
+  } | null>(null)
 
   createEffect(() => {
     const theme = ui.theme
@@ -60,6 +64,47 @@ export default function App() {
       return !onAnyCourt && !inQueue
     })
 
+  const autoEligiblePlayers = () => waitingPlayers().filter((p) => p.active)
+
+  const shufflePlayers = <T,>(items: T[]) => {
+    const shuffled = [...items]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
+  }
+
+  const getSlotPlayerNames = (
+    targetType: 'court' | 'queue',
+    targetId: string
+  ) => {
+    const target =
+      targetType === 'court'
+        ? courts.courts.find((c) => c.id === targetId)
+        : courts.queues.find((q) => q.id === targetId)
+    if (!target) return []
+    return [...target.team1, ...target.team2].filter(Boolean) as string[]
+  }
+
+  const resetBenchTimers = (names: string[]) => {
+    names.forEach((name) => players.resetQueueStart(name))
+  }
+
+  const pickRandomBenchPlayer = () => {
+    const pool = autoEligiblePlayers()
+    if (!pool.length) return null
+    return pool[Math.floor(Math.random() * pool.length)]
+  }
+
+  const isAutoRandomSlot = (
+    targetType: 'court' | 'queue',
+    targetId: string
+  ) => {
+    const target = autoRandomTarget()
+    return target?.type === targetType && target.id === targetId
+  }
+
   const levelMap = createMemo(() => {
     const map = new Map<string, number>()
     for (const p of players.players) {
@@ -74,6 +119,7 @@ export default function App() {
 
   const handleSelectPlayer = (id: string) => {
     setSelectedPlayerId((prev) => (prev === id ? null : id))
+    setAutoRandomTarget(null)
   }
 
   const handleAssignToSlot = (
@@ -107,6 +153,7 @@ export default function App() {
         { type: targetType, id: targetId, team, slot },
         player.name
       )
+      resetBenchTimers([slotPlayerName])
     } else {
       courts.assignPlayerToSlot(
         { type: targetType, id: targetId, team, slot },
@@ -133,6 +180,7 @@ export default function App() {
 
     removePlayerFromAllSlots(replacement)
     courts.assignPlayerToSlot({ type, id, team, slot }, replacement)
+    resetBenchTimers([currentPlayer])
     setRepeatPairModal(null)
   }
 
@@ -142,10 +190,16 @@ export default function App() {
     team: 'team1' | 'team2',
     slot: number
   ) => {
+    const target =
+      targetType === 'court'
+        ? courts.courts.find((c) => c.id === targetId)
+        : courts.queues.find((q) => q.id === targetId)
+    const removedPlayer = target?.[team][slot]
     courts.assignPlayerToSlot(
       { type: targetType, id: targetId, team, slot },
       null
     )
+    if (removedPlayer) resetBenchTimers([removedPlayer])
   }
 
   const removePlayerFromAllSlots = (name: string) => {
@@ -196,6 +250,7 @@ export default function App() {
       { type: targetType, id: targetId, team, slot },
       playerName
     )
+    if (existing && existing !== playerName) resetBenchTimers([existing])
   }
 
   const handleSlotClick = (
@@ -214,6 +269,27 @@ export default function App() {
     const selectedId = selectedPlayerId()
 
     if (slotPlayerName) {
+      if (selectedId) {
+        const selectedPlayer = players.players.find((p) => p.id === selectedId)
+        if (selectedPlayer && selectedPlayer.name !== slotPlayerName) {
+          handleAssignToSlot(targetType, targetId, team, slot)
+          return
+        }
+      }
+
+      if (isAutoRandomSlot(targetType, targetId)) {
+        const replacement = pickRandomBenchPlayer()
+        if (replacement) {
+          courts.assignPlayerToSlot(
+            { type: targetType, id: targetId, team, slot },
+            replacement.name
+          )
+          resetBenchTimers([slotPlayerName])
+          setSelectedPlayerId(null)
+        }
+        return
+      }
+
       const slotPlayer = players.players.find(
         (p) => p.name === slotPlayerName
       )
@@ -251,18 +327,22 @@ export default function App() {
   }
 
   const handleFinishMatch = (courtId: string, s1: number, s2: number) => {
+    const returningPlayers = getSlotPlayerNames('court', courtId)
     courts.finishMatch(courtId, s1, s2)
+    resetBenchTimers(returningPlayers)
   }
 
   const handleCancelMatch = (courtId: string) => {
+    const returningPlayers = getSlotPlayerNames('court', courtId)
     courts.cancelMatch(courtId)
+    resetBenchTimers(returningPlayers)
   }
 
   const handleAutoMatchmaker = () => {
-    const waiting = waitingPlayers()
+    const waiting = autoEligiblePlayers()
     if (waiting.length < 4) return
 
-    const candidates = waiting.map((p) => ({
+    const candidates = shufflePlayers(waiting).slice(0, 4).map((p) => ({
       name: p.name,
       level: p.level,
       waitSeconds: Math.floor((Date.now() - p.queueStart) / 1000),
@@ -270,12 +350,24 @@ export default function App() {
 
     const result = courts.autoMatchmaker(candidates)
     if (result) {
+      setSelectedPlayerId(null)
+      setAutoRandomTarget(result)
       const selector = result.type === 'court'
         ? `[data-court-id="${result.id}"]`
         : `[data-flip-id="queue-${result.id}"]`
       const el = document.querySelector(selector)
       el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
+  }
+
+  const handleRemoveQueue = (queueId: string) => {
+    resetBenchTimers(getSlotPlayerNames('queue', queueId))
+    courts.removeQueue(queueId)
+  }
+
+  const handleRemoveCourt = (courtId: string) => {
+    resetBenchTimers(getSlotPlayerNames('court', courtId))
+    courts.removeCourt(courtId)
   }
 
   const handleSendQueue = (queueId: string) => {
@@ -373,7 +465,7 @@ export default function App() {
                            handleRemovePlayer('queue', q.id, team, slot)
                          }
                          onSend={() => handleSendQueue(q.id)}
-                         onRemove={() => courts.removeQueue(q.id)}
+                         onRemove={() => handleRemoveQueue(q.id)}
                          onShowRepeatWarning={(team, players) =>
                            setRepeatPairModal({ type: 'queue', id: q.id, team, players })
                          }
@@ -391,11 +483,11 @@ export default function App() {
                   <div class="flex items-center gap-2">
                   <button
                     onClick={handleAutoMatchmaker}
-                    disabled={waitingPlayers().length < 4}
-                    title="Auto-matchmake 4 players"
+                    disabled={autoEligiblePlayers().length < 4}
+                    title="Randomly auto-match 4 available players"
                     class={
                       `px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 active:scale-[0.92] active:transition-[transform_0.15s_cubic-bezier(0.34,1.56,0.64,1)] ` +
-                      (waitingPlayers().length >= 4
+                      (autoEligiblePlayers().length >= 4
                         ? 'border-2 border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-transparent hover:bg-indigo-50 dark:hover:bg-indigo-900/20 shadow-sm'
                         : 'bg-gray-50/80 dark:bg-white/5 text-gray-400 dark:text-slate-500 border-2 border-gray-200/60 dark:border-white/10 cursor-not-allowed')
                     }
@@ -431,7 +523,7 @@ export default function App() {
                             handleFinishMatch(c.id, s1, s2)
                           }
                           onCancelMatch={() => handleCancelMatch(c.id)}
-                          onRemove={() => courts.removeCourt(c.id)}
+                          onRemove={() => handleRemoveCourt(c.id)}
                           onLabelChange={(label) =>
                             courts.updateCourtLabel(c.id, label)
                           }
